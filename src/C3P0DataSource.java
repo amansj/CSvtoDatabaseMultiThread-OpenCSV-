@@ -8,7 +8,6 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 public class C3P0DataSource {
    private static C3P0DataSource dataSource;
    private ComboPooledDataSource comboPooledDataSource;
-
    private C3P0DataSource() {
       try {
          comboPooledDataSource = new ComboPooledDataSource();
@@ -18,6 +17,7 @@ public class C3P0DataSource {
             .setJdbcUrl("jdbc:oracle:thin:@localhost:1521:xe");
          comboPooledDataSource.setUser("DBUSER");
          comboPooledDataSource.setPassword("1234");
+         comboPooledDataSource.setAcquireIncrement(1);
       }
       catch (PropertyVetoException ex1) {
          ex1.printStackTrace();
