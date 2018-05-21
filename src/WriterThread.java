@@ -38,7 +38,6 @@ public class WriterThread implements Runnable {
 	int start,end;
 	final Logger logger = Logger.getLogger("Global Logger");
 	private final int BATCH_SIZE=100;
-
 	private synchronized void errorinfo(Connection con,Exception e,int rownum)
 	{
 		PreparedStatement ps=null;

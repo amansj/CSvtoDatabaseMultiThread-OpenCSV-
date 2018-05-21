@@ -18,8 +18,8 @@ public class C3P0DataSource {
             .setDriverClass("oracle.jdbc.driver.OracleDriver");
          comboPooledDataSource
             .setJdbcUrl("jdbc:oracle:thin:@localhost:1521:xe");
-         comboPooledDataSource.setUser("a");
-         comboPooledDataSource.setPassword("admin");
+         comboPooledDataSource.setUser("DBUSER");
+         comboPooledDataSource.setPassword("1234");
       }
       catch (PropertyVetoException ex1) {
         logger.error(ex1.toString());

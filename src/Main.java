@@ -35,8 +35,10 @@ import com.opencsv.CSVReaderBuilder;
 public class Main {
 	private static String SQL = "";
 	private static final String TABLE_NAME = "MEMBERS";
+	private static final String TEST_CASE="test1";
 	private static final String DESC_TABLE_NAME = "DESCMEMBERS";
 	private static final int NO_OF_CORES = 2;
+	private static final String FILE_NAME="doc/membersfinal.csv";
 	final static Logger logger = Logger.getLogger("Global Logger");
 
 	private static HashMap<String, Integer> tableMetaData() {
@@ -98,12 +100,12 @@ public class Main {
 		return tableMappingDesc;
 	}
 
-	private static HashMap<String, Integer> csvHeader(String fileName) {
+	private static HashMap<String, Integer> csvHeader() {
 		HashMap<String, Integer> header = new HashMap<String, Integer>();
 		CSVReader csvReader = null;
 		Reader reader;
 		try {
-			reader = Files.newBufferedReader(Paths.get(fileName));
+			reader = Files.newBufferedReader(Paths.get(FILE_NAME));
 			csvReader = new CSVReaderBuilder(reader).build();
 			String[] data;
 			data = csvReader.readNext();
@@ -143,7 +145,7 @@ public class Main {
 	{
 		FileOutputStream fileOut;
 		try {
-			fileOut = new FileOutputStream("E:/multi_timer.ser");
+			fileOut = new FileOutputStream("F:/time_ser/time_ser/"+TEST_CASE+"/ser/multi_timer_for_2_thread.ser");
 			 ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			 out.writeObject(multiTimer);
 			 out.close();
@@ -186,9 +188,8 @@ public class Main {
 		HashMap<Long, int[]> prevThreadStatus = deSerialize();
 		ConcurrentHashMap<Integer,Duration> multiTimer=new ConcurrentHashMap<Integer,Duration>();
 		AtomicInteger rowcount=new AtomicInteger(0);
-		String fileName = "doc/membersfinal.csv";
 		HashMap<String, Integer> tableMetaData = tableMetaData();
-		HashMap<String, Integer> header = csvHeader(fileName);
+		HashMap<String, Integer> header = csvHeader();
 		HashMap<String, HashMap<String, String>> tableMappingDesc = tableDescription();
 		HashMap<Long, int[]> threadStatus = new HashMap<Long, int[]>();
 		ExecutorService execService = Executors.newFixedThreadPool(NO_OF_CORES);
@@ -201,7 +202,7 @@ public class Main {
 				if (b[2] < b[1]) {
 					start = b[2] + 1;
 					end = b[1];
-					WriterThread thread = new WriterThread(fileName, SQL, header, tableMappingDesc, tableMetaData,funcStartTime,multiTimer,rowcount);
+					WriterThread thread = new WriterThread(FILE_NAME, SQL, header, tableMappingDesc, tableMetaData,funcStartTime,multiTimer,rowcount);
 					threadStatus.put((long) (thread.hashCode()), new int[] { start, end, start - 1 });
 					thread.setIndex(start, end, threadStatus);
 					execService.execute(thread);
@@ -212,7 +213,7 @@ public class Main {
 			Scanner sc = new Scanner(System.in);
 			int numOfThread = sc.nextInt();
 			sc.close();
-			File file = new File(fileName);
+			File file = new File(FILE_NAME);
 			MutableInt numRecords = new MutableInt();
 			MutableInt numPage = new MutableInt();
 			MutableInt remRecords = new MutableInt();
@@ -224,7 +225,7 @@ public class Main {
 			for (i = 0; i < numOfThread; i++) {
 				start = i * numPages + 1;
 				end = start + numPages - 1;
-				WriterThread thread = new WriterThread(fileName, SQL, header, tableMappingDesc, tableMetaData,funcStartTime,multiTimer,rowcount);
+				WriterThread thread = new WriterThread(FILE_NAME, SQL, header, tableMappingDesc, tableMetaData,funcStartTime,multiTimer,rowcount);
 				threadStatus.put((long) (thread.hashCode()), new int[] { start, end, start - 1 });
 				thread.setIndex(start, end, threadStatus);
 				execService.execute(thread);
@@ -232,7 +233,7 @@ public class Main {
 			while (remainingRecord != 0) {
 				start = numOfRecord - remainingRecord + 1;
 				end = numOfRecord - remainingRecord + 1;
-				WriterThread thread = new WriterThread(fileName, SQL, header, tableMappingDesc, tableMetaData,funcStartTime,multiTimer,rowcount);
+				WriterThread thread = new WriterThread(FILE_NAME, SQL, header, tableMappingDesc, tableMetaData,funcStartTime,multiTimer,rowcount);
 				threadStatus.put((long) (thread.hashCode()), new int[] { start, end, start });
 				thread.setIndex(start, end, threadStatus);
 				execService.execute(thread);
